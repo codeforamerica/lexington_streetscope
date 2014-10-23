@@ -66,8 +66,8 @@ form {
 .submit-btn, .upload-btn {
   text-transform: lowercase;
   color: #fff;
-  background-color: #FF553F;
-  border: 5px solid #FF553F;
+  background-color: #3ca0d3;
+  border: 5px solid #3ca0d3;
   text-align: center;
   border-radius: 10px;
   padding: 7px;
@@ -79,8 +79,8 @@ form {
 
 .submit-btn:hover{
   background-color: #fff;
-  border: 5px solid #FF553F;
-  color: #FF553F;
+  border: 5px solid #3ca0d3;
+  color: #3ca0d3;
   font-weight: 600;
 }
 
@@ -89,8 +89,16 @@ form {
 }
 
 .upload-btn {
+  cursor: pointer;
   background-color: #27AF84;
   border: 5px solid #27AF84;
+}
+
+.upload-btn:hover{
+  background-color: #fff;
+  border: 5px solid #27AF84;
+  color: #27AF84;
+  font-weight: 600;
 }
 
 .fileUpload {
