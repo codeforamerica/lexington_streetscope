@@ -35,6 +35,9 @@ strong {
   left: 0;
   bottom: 0;
   width: 40%;
+
+#logo {
+  padding-bottom: 50px;
 }
 
 #logo {

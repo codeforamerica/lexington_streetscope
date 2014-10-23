@@ -15,7 +15,7 @@
     <div class="row">
       <div class="col-md-offset-5">
         <div id="intro">
-          <h1>Streetscope</h1>
+          <div id="logo"><img src="/static/images/streetscope-logo.png" width="50%"/></div>
           <p><strong>How many different ways can you type your address?</strong> City agencies in Lexington sometimes disagree on the correct way to reference a single address or taxlot. (And sometimes someone entering data just makes a typo. Oops!) That makes it really hard to get a complete picture of a single property.<br><br><strong>Streetscope</strong> allows different databases to know they're talking about the same address, even if it's not spelled exactly the same. It's mostly for computers, but people can use it too! It was built based on data provided by the Fayette County PVA. <span><a href="/about">Learn more</a></span></p>
         </div>
         <div id="the-basics">
@@ -23,10 +23,16 @@
         </div>
 
         <h3>Batch geocode!</h3>
+        <h4>Submit a CSV file with a column named 'ADDRESS'</h4>
         <form enctype="multipart/form-data" action="/geocode_batch" method="POST">
           <input type="file" name="query">
           <input type="submit">
         </form>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-offset-5">
+        <p>©2014 <a href="http://codeforamerica.org">Code for America</a></p>
       </div>
     </div>
   </div>
