@@ -38,11 +38,9 @@ strong {
   width: 40%;
 }
 
-#intro {
+#logo {
+  display: inline-block;
   padding-top: 50px;
-}
-
-#intro #logo {
   padding-bottom: 40px;
 }
 
@@ -135,6 +133,10 @@ footer {
 
 #about-wrapper section {
   padding-top: 50px;
+}
+
+#navigation #logo {
+  padding: 0;
 }
 
 #navigation, #what {
