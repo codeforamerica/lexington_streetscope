@@ -16,14 +16,11 @@ strong {
   font-size: 1.5em
 }
 
-/*Bootstrap modifications*/
 .form-control {
   height: 50px;
   font-size: 1.5em;
   margin-bottom: 20px;
 }
-
-/*Custom styles*/
 
 .twitter-typeahead {
   width: 100%;
@@ -34,13 +31,13 @@ strong {
   top: 0;
   left: 0;
   bottom: 0;
-  width: 40%;
+  width: inherit;
 }
 
 #logo {
   display: inline-block;
   padding-top: 50px;
-  padding-bottom: 40px;
+  padding-bottom: 30px;
 }
 
 #intro h1 {
@@ -84,6 +81,7 @@ form {
 }
 
 .submit-btn {
+  margin-top: 4px;
   display: block;
 }
 
@@ -194,4 +192,18 @@ footer {
 
 #how img {
   border: 1px solid #CCD4D0;
+}
+
+/*media queries*/
+
+@media (max-width: 768px) {
+
+  #map {
+    position: absolute;
+    height: 300px;
+  }
+
+  #content-container {
+    margin-top: 300px;
+  }
 }
