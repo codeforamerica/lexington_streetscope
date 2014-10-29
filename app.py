@@ -26,9 +26,8 @@ if RECORD_REQUESTS == True:
 
 if os.environ.get('BONSAI_URL'):
   url = urlparse(os.environ['BONSAI_URL'])
-  bonsai_tuple = url.netloc.partition('@')
-  ELASTICSEARCH_HOST = bonsai_tuple[2]
-  ELASTICSEARCH_AUTH = bonsai_tuple[0]
+  ELASTICSEARCH_HOST = url.hostname
+  ELASTICSEARCH_AUTH = url.username + ':' + url.password
   es = Elasticsearch([{'host': ELASTICSEARCH_HOST}], http_auth=ELASTICSEARCH_AUTH)
 else:
   es = Elasticsearch()
@@ -51,8 +50,8 @@ def address_parts(address):
   return address_parts
 
 def address_well_formed(address=''):
-  address_parts = address_parts(address)
-  well_formed = 'StreetName' in address_parts and 'AddressNumber' in address_parts
+  parts = address_parts(address)
+  well_formed = 'StreetName' in parts and 'AddressNumber' in parts
 
   return {
     'address': address,
@@ -102,8 +101,7 @@ def format_parcel(match):
       ]
     },
     "properties": {
-      "formatted_address": match['ADDRESS'],
-      "parcel_id": match['PVANUM']
+      "formatted_address": match['ADDRESS']
     }
   }
 
@@ -166,4 +164,4 @@ def geocode_batch():
     return 'attach file', 400
 
 if __name__ == ('__main__'):
-  app.run(debug=get_flag('DEBUG'))
+  app.run(debug=True)

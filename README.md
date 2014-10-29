@@ -1,12 +1,12 @@
-# Streetscope (Flask version)
+# Streetscope (OpenAddresses version)
 
-Streetscope is a service to allow people, but especially computer programs, to submit an address like '123 Main St.' and find its lat/lon coordinates and canonical parcel_id in the Lexington, KY Property Value Administrator's set of addresses.
+Streetscope is a service to allow people, but especially computer programs, to submit an address like '123 Main St.' and find its lat/lon coordinates. This version is meant to take an [OpenAddresses](http://github.com/openaddresses) CSV and use it to create a geocoder. This idea came from [@daguar](http://github.com/daguar) and [@lyzidiamond](http://github.com/lyzidiamond) while hiking. Go on more hikes.
+
+The original version was created for the City of Lexington, KY using parcel data from the Fayette County Property Valuation Administrator. You can see it live [here](http://streetscope.net).
 
 ### Why are we doing this?
 
-City agencies in Lexington sometimes disagree on the correct way to reference a single address or taxlot. (And sometimes someone entering data just makes a typo. Oops!) That makes it really hard to get a complete picture of a single property.
-
-Streetscope allows different databases to know they're talking about the same address, even if it's not spelled exactly the same. It returns a geographic location and a parcel ID for matching addresses across databases to enable connections between these datasets and get a true picture of the city.
+Part of the value of the OpenAddresses project is the ability to create a geocoder with the addresses collected. Streetscope makes geocoders from given datasets. Together, everybody wins!
 
 ### What will this do in the future?
 
@@ -21,54 +21,18 @@ Lexingteam!
 * [Erik Schwartz](https://github.com/eeeschwartz)
 * [Lyzi Diamond](https://github.com/lyzidiamond)
 * [Livien Yin](https://github.com/livienyin)
-
-with Chattanooga fellow [Jeremia Kimelman](https://github.com/jeremiak)
-
-and with completely indispensable help from Jonathan Hollinger and Shaye Rabold at [Lexington-Fayette Urban County Government](http://lexingtonky.gov/) and David O'Neill, the [Property Valuation Administrator](http://www.fayette-pva.com/).
-
-### How to use it?
-
-(This section remains from lexington-geocoder)
-
-When programming, make an HTTP GET request to `http://streetscope.net/geocode?query=449+w+4th`
-
-The geoJSON response:
-
-```
-{
-"type": "FeatureCollection",
-   "features": [
-       {
-          "type": "Feature",
-          "geometry": {
-            "type": "Point",
-            "coordinates": [
-              -84.4949386945456,
-              38.055285154852555
-            ]
-          },
-          "properties": {
-              "formatted_address": "449 W FOURTH ST",
-              "parcel_id": "15602150"
-          }
-       },
-       ... { more features }
-   ]
-},
-```
-
-The json result can be previewed through the [HTML UI](http://streetscope.net/). ![HTML UI](https://raw.githubusercontent.com/codeforamerica/lexington-geocoder/master/screenshots/streetscope.png)
+* plus Chattanooga fellow [Jeremia Kimelman](https://github.com/jeremiak).
 
 ### Setup
 
 * [Install Elasticsearch](http://www.elasticsearch.org/guide/en/elasticsearch/guide/current/_installing_elasticsearch.html) or for osx homebrew users `brew install elasticsearch`
 * [Install Python and Virtualenv](https://github.com/codeforamerica/howto/blob/master/Python-Virtualenv.md)
 
-In your command line, run the following:
+In your command line, run the following (the lines after $ are commands and the lines after # are comments):
 
 ```
-$ git clone https://github.com/codeforamerica/lexington-geocoder-flask.git
-$ cd lexington-geocoder-flask
+$ git clone https://github.com/codeforamerica/streetscope.git
+$ cd streetscope
 $ mkdir venv
 $ virtualenv venv
 $ source venv/bin/activate
@@ -76,9 +40,21 @@ $ pip install -r requirements.txt
 
 # make sure elasticsearch is running, then:
 
-$ mv sample.env .env
-$ python index_addresses.py
+$ cp sample.env .env
+
+# create elasticsearch index on local elasticsearch instance
+
+$ curl -XPUT "localhost:9200/addresses/"
+```
+
+Note where the proccess OpenAddresses CSV lives on your computer. **KEEP IN MIND** that the OpenAddresses schema does not include city, county, or state names so the results for `123 main street` are implicitly within the indexed area.
+
+```
+$ python index_addresses.py path/to/open-addresses-csv.csv
 $ ... takes a few minutes
+
+# start the flask app
+
 $ honcho start
 ```
 
@@ -92,7 +68,7 @@ Application should be running on localhost:5000.
 
 ### Deploy to Heroku
 
-In your command line, run the following:
+Make sure to save your OpenAddresses CSV in the root of the project. Then, in your command line, run the following:
 
 ```
 $ heroku create
@@ -100,15 +76,22 @@ $ git push heroku master
 $ heroku addons:add bonsai
 $ bonsai=`heroku config:get BONSAI_URL`
 $ curl -XPUT "$bonsai/addresses/"
-$ heroku run python index_addresses.py
+$ heroku run python index_addresses.py open-addresses-csv.csv
 $ ... takes a few minutes
 $ heroku open
 ```
 
-### Enable request logging in Postgres for geocoding quality analysis
+### Enable request logging in PostgreSQL for geocoding quality analysis (optional)
+
+This project includes a QA/QC element by enabling request logging for geocoding quality analysis. It requires setting up a PostgreSQL instance to keep track of the geocodes. This is **optional:** You do not need to do this for Streetscope to run successfully.
+
+* [Install PostgreSQL](https://github.com/codeforamerica/howto/blob/master/PostgreSQL.md)
+* Make sure PostgreSQL is running
+
+In your command line, run the following:
 
 ```
-psql -c 'CREATE DATABASE geocoder'
+$ psql -c 'CREATE DATABASE geocoder'
 ```
 
 Set the following environment vars in your `.env` file
@@ -118,10 +101,10 @@ RECORD_REQUESTS=True
 DATABASE_URL=postgres://postgres@localhost/geocoder
 ```
 
-run
+In the command line, run the following:
 
 ```
-python setup_postgres.py
+$ python setup_postgres.py
 ```
 
-Now geocoding requests will get logged to postgres along with a quality score from elasticsearch. In the future we'll grab the lowest quality scores, compare them to another geocoder and figure out how to tune the elasticsearch query to improve results.
+Now geocoding requests will get logged to your PostgreSQL database along with a quality score from Elasticsearch. In the future, we'll grab the lowest quality scores, compare them to another geocoder, and figure out how to tune the Elasticsearch query to improve results.
